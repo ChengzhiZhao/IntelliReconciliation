@@ -14,4 +14,8 @@ trait Handler extends Serializable {
   def assignRowNumber(colName:String, df: DataFrame): DataFrame ={
     df.withColumn(colName, monotonically_increasing_id + 1)
   }
+
+  def generateHashColumn(df: DataFrame, cols: Seq[String]): DataFrame={
+    df.withColumn("HashCode", md5(array(cols.head, cols.tail:_*)))
+  }
 }

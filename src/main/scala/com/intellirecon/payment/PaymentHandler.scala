@@ -5,8 +5,9 @@ import util.Handler
 
 class PaymentHandler() extends Serializable with Handler {
 
-  def assignPaymentRowNumber(raw_df: DataFrame): DataFrame ={
+  def assignPaymentRowNumberWithHashCode(raw_df: DataFrame, cols: Seq[String]): DataFrame ={
     val matching_df = assignRowNumber("PaymentID",raw_df)
-    matching_df
+    val hs = generateHashColumn(matching_df, cols)
+    hs
   }
 }
