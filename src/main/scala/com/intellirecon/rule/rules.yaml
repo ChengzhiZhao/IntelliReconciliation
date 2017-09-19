@@ -1,0 +1,20 @@
+Rules:
+  - ruleName: rule1
+    receivableColumns:
+      - Invoice Number
+      - Invoice Date
+      - Customer Reference
+    paymentColumns:
+      - Invoice Number
+      - Invoice Date
+      - Customer Reference
+    sequence: 1
+
+  - ruleName: rule2
+    receivableColumns:
+      - Invoice Number
+      - Invoice Date
+    paymentColumns:
+      - Invoice Number
+      - Invoice Date
+    sequence: 2

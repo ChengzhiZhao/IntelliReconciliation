@@ -2,8 +2,8 @@ package com.intellirecon.executor
 import com.intellirecon.datareader.FileReader
 import com.intellirecon.receivable.ReceivableHandler
 import com.intellirecon.payment.PaymentHandler
-import org.apache.spark.sql.functions._
-
+import com.intellirecon.rule.RuleReader
+import com.intellirecon.matcher.Matcher
 object Executor {
 
 
@@ -16,19 +16,18 @@ object Executor {
                   .master("local[*]")
                   .appName("IntelliRecon")
                   .getOrCreate
-    import spark.implicits._
+
+    val ruleReader = new RuleReader()
+    val rules = ruleReader.read("/home/chengzhizhao/Github/IntelliReconciliation/src/main/scala/com/intellirecon/rule/rules.yaml")
 
     val raw_receivable_df = new FileReader(spark, receivableFile).readCSV()
     val receivableHandler = new ReceivableHandler()
-    val rcol = Seq("Invoice Number", "Invoice Date","Customer Reference")
-    val receivable = receivableHandler.assignReceivableRowNumberWithHashCode(raw_receivable_df, rcol).alias("receivable")
-    
+
     val raw_payment_df = new FileReader(spark, paymentFile).readCSV()
     val paymentHandler = new PaymentHandler()
-    val pcol = Seq("Invoice Number", "Invoice Date","Customer Reference")
-    val payment = paymentHandler.assignPaymentRowNumberWithHashCode(raw_payment_df, pcol).alias("payment")
 
-    val r = receivable.join(payment, $"receivable.HashCode" === $"payment.HashCode", "outer")
-    r.where("payment.HashCode is null").show
-  }
+    val matcher = new Matcher(spark)
+    val r = matcher.matchOnRules(rules.sortBy(r=>r.sequence), raw_receivable_df, receivableHandler, raw_payment_df, paymentHandler)
+    r.show()
+    }
 }
