@@ -27,7 +27,9 @@ object Executor {
     val paymentHandler = new PaymentHandler()
 
     val matcher = new Matcher(spark)
-    val r = matcher.matchOnRules(rules.sortBy(r=>r.sequence), raw_receivable_df, receivableHandler, raw_payment_df, paymentHandler)
+    val r = matcher.matchOnReceivable(rules.sortBy(r=>r.sequence), raw_receivable_df, receivableHandler, raw_payment_df, paymentHandler)
     r.show()
+    val p = matcher.matchOnPayment(rules.sortBy(r=>r.sequence), raw_receivable_df, receivableHandler, raw_payment_df, paymentHandler)
+    p.show()
     }
 }
